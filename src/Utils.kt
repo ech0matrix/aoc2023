@@ -1,4 +1,5 @@
 import java.io.File
+import java.lang.IllegalStateException
 import java.math.BigInteger
 import java.security.MessageDigest
 import kotlin.math.abs
@@ -35,23 +36,88 @@ data class Coordinates(
     }
 }
 
-data class InclusiveRange(
-        val x: Int,
-        val y: Int
+//data class InclusiveRange(
+//        val x: Int,
+//        val y: Int
+//) {
+//    fun fullyContains(other: InclusiveRange): Boolean {
+//        return this.x <= other.x && this.y >= other.y
+//    }
+//
+//    fun overlaps(other: InclusiveRange): Boolean {
+//        return (this.x >= other.x && this.x <= other.y)
+//                || (this.y >= other.x && this.y <= other.y)
+//                || (other.x >= this.x && other.x <= this.y)
+//                || (other.y >= this.x && other.y <= this.y)
+//    }
+//
+//    fun merge(other: InclusiveRange): InclusiveRange {
+//        check(overlaps(other))
+//        return InclusiveRange(minOf(x, other.x), maxOf(y, other.y))
+//    }
+//}
+
+data class InclusiveRange<T : Comparable<T>>(
+        val x: T,
+        val y: T
 ) {
-    fun fullyContains(other: InclusiveRange): Boolean {
+    fun fullyContains(other: InclusiveRange<T>): Boolean {
         return this.x <= other.x && this.y >= other.y
     }
 
-    fun overlaps(other: InclusiveRange): Boolean {
+    fun overlaps(other: InclusiveRange<T>): Boolean {
         return (this.x >= other.x && this.x <= other.y)
                 || (this.y >= other.x && this.y <= other.y)
                 || (other.x >= this.x && other.x <= this.y)
                 || (other.y >= this.x && other.y <= this.y)
     }
 
-    fun merge(other: InclusiveRange): InclusiveRange {
+    fun merge(other: InclusiveRange<T>): InclusiveRange<T> {
         check(overlaps(other))
         return InclusiveRange(minOf(x, other.x), maxOf(y, other.y))
+    }
+
+    fun intersect(other: InclusiveRange<T>): InclusiveRange<T> {
+        if (this.fullyContains(other)) {
+            return other
+        }
+        if (other.fullyContains(this)) {
+            return this
+        }
+
+        check(overlaps(other))
+        return InclusiveRange(maxOf(x, other.x), minOf(y, other.y))
+    }
+
+    fun remove(other: InclusiveRange<T>, incrementer: (T, Int) -> T): List<InclusiveRange<T>> {
+        if (!overlaps(other)) {
+            return listOf(this)
+        }
+        if (other.fullyContains(this)) {
+            return listOf()
+        }
+        if (fullyContains(other)) {
+            if (x == other.x) {
+                return listOf(InclusiveRange(incrementer(other.y, 1), y))
+            }
+            if (y == other.y) {
+                return listOf(InclusiveRange(x, incrementer(other.x, -1)))
+            }
+            return listOf(
+                InclusiveRange(x, incrementer(other.x, -1)),
+                InclusiveRange(incrementer(other.y, 1), y)
+            )
+        }
+        if (x < other.x) {
+            return listOf(InclusiveRange(x, incrementer(other.x, -1)))
+        }
+        check(y > other.y)
+        return listOf(InclusiveRange(incrementer(other.y, 1), y))
+    }
+}
+
+fun <T> checkEquals(expected: T, actual: T) {
+    if (expected != actual) {
+        throw IllegalStateException("Expected value '$expected', actual value '$actual'")
     }
 }

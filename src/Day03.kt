@@ -8,7 +8,7 @@ fun main() {
 
     data class Num2(
             val number: Int,
-            val indexes: InclusiveRange,
+            val indexes: InclusiveRange<Int>,
             val rowIndex: Int
     )
 
