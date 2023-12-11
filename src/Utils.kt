@@ -36,6 +36,19 @@ data class Coordinates(
     }
 }
 
+data class LongCoordinates(
+        val row: Long,
+        val col: Long
+) {
+    fun add(other: LongCoordinates): LongCoordinates {
+        return LongCoordinates(this.row + other.row, this.col + other.col)
+    }
+
+    fun manhattanDistance(other: LongCoordinates): Long {
+        return abs(this.row - other.row) + abs(this.col - other.col)
+    }
+}
+
 //data class InclusiveRange(
 //        val x: Int,
 //        val y: Int
