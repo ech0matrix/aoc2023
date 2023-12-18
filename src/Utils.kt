@@ -2,6 +2,7 @@ import java.io.File
 import java.lang.IllegalStateException
 import java.math.BigInteger
 import java.security.MessageDigest
+import java.util.Date
 import kotlin.math.abs
 
 /**
@@ -133,4 +134,12 @@ fun <T> checkEquals(expected: T, actual: T) {
     if (expected != actual) {
         throw IllegalStateException("Expected value '$expected', actual value '$actual'")
     }
+}
+
+fun <T> timeIt(function: () -> T): T {
+    val start = Date().time
+    val result = function()
+    val end = Date().time
+    println("Time: ${end-start} ms")
+    return result
 }
