@@ -23,17 +23,52 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
  */
 fun Any?.println() = println(this)
 
+enum class Direction {
+    NORTH,
+    SOUTH,
+    EAST,
+    WEST;
+
+    fun toCoordinates(): Coordinates {
+        return when (this) {
+            NORTH -> Coordinates.NORTH
+            SOUTH -> Coordinates.SOUTH
+            EAST -> Coordinates.EAST
+            WEST -> Coordinates.WEST
+        }
+    }
+
+    fun withDistance(distance: Int): Coordinates {
+        val unit = toCoordinates()
+        return Coordinates(unit.row * distance, unit.col * distance)
+    }
+}
 
 data class Coordinates(
         val row: Int,
         val col: Int
 ) {
+    companion object {
+        val NORTH = Coordinates(-1,  0)
+        val SOUTH = Coordinates( 1,  0)
+        val EAST  = Coordinates( 0,  1)
+        val WEST  = Coordinates( 0, -1)
+    }
+
     fun add(other: Coordinates): Coordinates {
         return Coordinates(this.row + other.row, this.col + other.col)
     }
 
+    fun add(direction: Direction): Coordinates {
+        return add(direction.toCoordinates())
+    }
+
     fun manhattanDistance(other: Coordinates): Int {
         return abs(this.row - other.row) + abs(this.col - other.col)
+    }
+
+    fun toLong(): LongCoordinates {
+        return LongCoordinates(row.toLong(), col.toLong())
     }
 }
 
@@ -43,6 +78,10 @@ data class LongCoordinates(
 ) {
     fun add(other: LongCoordinates): LongCoordinates {
         return LongCoordinates(this.row + other.row, this.col + other.col)
+    }
+
+    fun add(direction: Direction): LongCoordinates {
+        return add(direction.toCoordinates().toLong())
     }
 
     fun manhattanDistance(other: LongCoordinates): Long {
