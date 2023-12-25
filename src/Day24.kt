@@ -61,7 +61,7 @@ fun main() {
         return intersectionCount
     }
 
-    fun part2(input: List<String>, boundaries: InclusiveRange<Long>): Int {
+    //fun part2(input: List<String>, boundaries: InclusiveRange<Long>): Int {
         // https://jfmc.github.io/z3-play/
         // Online Z3 playground:
 
@@ -95,7 +95,7 @@ fun main() {
         //
         //(check-sat)
         //(get-model)
-    }
+    //}
 
     val testInput = readInput("Day24_test")
     checkEquals(2, part1(testInput, InclusiveRange(7, 27)))
